@@ -1,11 +1,12 @@
-import React, { useMemo } from "react";
+import React, { useState, useEffect } from 'react';
 import styled from "styled-components";
-import { Block } from "./components/Block";
-import { Item } from "./components/Item";
+import { InvitesList } from './components/InvitesList';
 import { Title } from "./components/Title";
-import { UsersData } from "./data/mockUsersData";
+import { UsersList } from './components/UsersList';
+import { UsersData, InvitedUsers } from "./data/mockUsersData";
 import { AdminIcon } from "./icons/AdminIcon";
 import { UserIcon } from "./icons/UserIcon";
+import { Invite, TeamMember } from './types';
 
 const Wrapper = styled.div`
   padding: 16px 24px;
@@ -22,40 +23,43 @@ const Group = styled.div`
 `;
 
 export const App = () => {
-  const admins = useMemo(() => {
-    return UsersData.filter((user) => user.role === "Administrator");
+  const [users, setUsers] = useState<TeamMember[]>([]);
+  const [invites, setInvites] = useState<Invite[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        setUsers(UsersData);
+        setInvites(InvitedUsers);
+      } catch (err) {
+        setError((err as Error).message);
+      }
+      setIsLoading(false);
+    };
+    fetchData();
   }, []);
 
-  const users = useMemo(() => {
-    return UsersData.filter((user) => user.role === "Standard");
-  }, []);
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Wrapper>
       <Group>
         <Title Icon={AdminIcon}>Administrators</Title>
-        <Block>
-          {admins.map((admin) => (
-            <Item key={admin.id} invited={admin.status === "invited"}>
-              {admin.status === "invited"
-                ? admin.user.phone
-                : `${admin.user.name} ${admin.user.lastName}`}
-            </Item>
-          ))}
-        </Block>
+        <UsersList users={users} role="Administrator" />
+        <InvitesList invites={invites} role="Administrator" />
       </Group>
-
       <Group>
         <Title Icon={UserIcon}>Standard Users</Title>
-        <Block>
-          {users.map((user) => (
-            <Item key={user.id} invited={user.status === "invited"}>
-              {user.status === "invited"
-                ? user.user.phone
-                : `${user.user.name} ${user.user.lastName}`}
-            </Item>
-          ))}
-        </Block>
+        <UsersList users={users} role="Standard" />
+        <InvitesList invites={invites} role="Standard" />
       </Group>
     </Wrapper>
   );

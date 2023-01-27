@@ -1,6 +1,6 @@
-import { TeamMember } from "../types";
+import { TeamMember, Invite } from "../types";
 
-export const UsersData: TeamMember[] = [
+export const UsersData:TeamMember[] = [
   {
     id: 1,
     status: "request",
@@ -122,3 +122,16 @@ export const UsersData: TeamMember[] = [
     role: "Standard",
   },
 ];
+
+export const InvitedUsers:Invite[] = [
+  {
+    id: 4,
+    phone: "+353 1234567",
+    role: "Administrator",
+  },
+  {
+    id: 8,
+    phone: "+353 1234567",
+    role: "Standard",
+  },
+]

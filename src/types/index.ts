@@ -5,6 +5,12 @@ export interface TeamMember {
   role: Role;
 }
 
+export interface Invite {
+  id: number;
+  phone: string;
+  role: Role;
+}
+
 export type Role = "Administrator" | "Standard";
 export type Status =
   | "request"
